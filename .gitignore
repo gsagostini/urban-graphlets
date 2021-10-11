@@ -1,0 +1,5 @@
+.ipynb_checkpoints
+__pycache__
+notebooks/cache
+notebooks/Testing.ipynb #Temp. notebook I am migrating to the repo
+.DS_Store
