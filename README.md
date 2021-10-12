@@ -8,11 +8,11 @@ To use the code in this repository, the creation of a new virtual environment is
 ```
 conda env create -f environment.yml
 ```
-The environment `cities-graphlets-env` will be created and can be activated with `conda activate cities-graphlets-env`. Installation via `pip` is not recommend due to constraints in the OSMNx library.
+The environment `urban-graphlets` will be created and can be activated with `conda activate urban-graphlets`. Installation via `pip` is not recommend due to constraints in the OSMNx library.
 
-Orbit counting and graphlet analysis relies on the Orbit Counting Algorithm [1]. The original implementation of the algorithm uses C++, so we make use of a python wrapper [2] hosted on the `src/d2_graphlets/` directory. To install it, one must run:
+Orbit counting and graphlet analysis relies on the Orbit Counting Algorithm [1]. The original implementation of the algorithm uses C++, so we make use of a python wrapper [2] hosted on the `src` directory. To install it, one must run:
 ```
-cd src/d2_graphlets/
+cd src/
 make
 ```
 
@@ -23,8 +23,6 @@ make
 │
 ├── environment.yml                <- Environment export generated with `conda env export > environment.yml`
 │
-├── requirements.txt               <- Requirements file generated with `pip freeze > requirements.txt` (not recommended for installation)
-│
 ├── .gitignore                     <- Avoids uploading certain files
 │
 ├── data
@@ -34,17 +32,10 @@ make
 │
 ├── notebooks                      <- Jupyter notebooks. Naming convention is date MMDD (for ordering) and a short description.
 │
-└── src                            <- Source code for use in this project.
-    │
-    ├── __init__.py
-    │
-    ├── d0_utils
-    │
-    ├── d1_graphs
-    │
-    ├── d2_graphlets
-    │
-    └── d3_GHSL
+├── src                            <- Source code for use in this project, which can be imported as modules into the notebooks and scripts.
+│
+└── scripts                        <- Scripts which perform a series of tasks.
+
 ```
 
 (To be explained further)
