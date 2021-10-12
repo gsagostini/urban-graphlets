@@ -1,4 +1,4 @@
-name: cities-graphlets
+name: urban-graphlets
 channels:
   - anaconda
   - conda-forge
