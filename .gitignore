@@ -1,5 +1,7 @@
 .ipynb_checkpoints
-__pycache__
+_pycache_
 notebooks/cache
-notebooks/Testing.ipynb #Temp. notebook I am migrating to the repo
 .DS_Store
+
+data/test-run/*
+!data/test-run/.gitkeep
