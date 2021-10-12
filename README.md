@@ -12,9 +12,10 @@ The environment `urban-graphlets` will be created and can be activated with `con
 
 Orbit counting and graphlet analysis relies on the Orbit Counting Algorithm [1]. The original implementation of the algorithm uses C++, so we make use of a python wrapper [2] hosted on the `src` directory. To install it, one must run:
 ```
-cd src/
+cd src/orcalib/
 make
 ```
+Orca may now be imported as a Python module via the comand `from src.orcalib import orca`.
 
 ## Repository Setup
 
