@@ -1,5 +1,5 @@
 .ipynb_checkpoints
-_pycache_
+__pycache__
 notebooks/cache
 .DS_Store
 
