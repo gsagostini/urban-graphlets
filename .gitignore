@@ -1,6 +1,8 @@
 data/test-run/*
 !data/test-run/.gitkeep
 
+*.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
