@@ -1,6 +1,6 @@
-# Graphlet Correlations for Street Networks of Worlwide Urban Centers
+# Graphlet Analysis for Street Networks of Worlwide Urban Centers
 
-Abstract paragraph with project goals.
+(Description to come)
 
 ## Installation
 
