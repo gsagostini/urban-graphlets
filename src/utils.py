@@ -29,6 +29,11 @@ def load_file(filepath, ext=None):
         
     return loaded_file
 
+def save_file(file, filepath):
+    with open(filepath, 'wb') as f:
+        pkl.dump(file, f)
+    return file
+
 def get_categorical_cmap(df, col, null_value=pd.NA, cmap=cm.tab10):
 
     keys = list(df[col].unique())
