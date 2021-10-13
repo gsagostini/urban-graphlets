@@ -7,6 +7,11 @@ import sys
 sys.path.append('../')
 
 import numpy as np
+from tqdm import tqdm
+from joblib import Parallel, delayed
+
+import multiprocessing
+num_cores = multiprocessing.cpu_count()
 
 from scipy.spatial.distance import minkowski
 from scipy.spatial.distance import squareform
@@ -95,7 +100,7 @@ def get_D_matrix(GDM):
     w = get_w_vec(num_orbits=GDM.shape[1])
     return squareform(pairwise_distances(GDM, metric=get_GDVdistance, w=w, n_jobs=-1))
 
-def get_D_matrix_dict(GDM_dict, save=True, test=False, filepath=None):
+def get_D_matrix_dict(GDM_dict, save=True, test=False, filepath=None, num_cores=num_cores):
     """
     Gets a dictionary with the distance matrix corresponding to each GDM
     
@@ -104,10 +109,11 @@ def get_D_matrix_dict(GDM_dict, save=True, test=False, filepath=None):
     :return dictionary with the same keys, values are condensed distance matrices
     """
     
-    D_dict = dict()
-    
-    for key in GDM_dict:
-        D_dict[key] = get_D_matrix(GDM_dict[key])
+    keys = list(GDM_dict.keys())
+    inputs = list(GDM_dict.values())
+    outputs = Parallel(n_jobs=num_cores)(delayed(get_D_matrix)(i) for i in inputs)
+        
+    D_dict = dict(zip(keys, outputs))
         
     if save:
         if filepath is None:
@@ -121,7 +127,7 @@ def get_D_matrix_dict(GDM_dict, save=True, test=False, filepath=None):
         
     return D_dict
 
-def get_linkage_dict(D_matrix_dict, cluster_method, save=True, test=False, filepath=None):
+def get_linkage_dict(D_matrix_dict, cluster_method, save=True, test=False, filepath=None, num_cores=num_cores):
     """
     Gets a dictionary with the linkage matrix corresponding to each city
     
@@ -131,10 +137,11 @@ def get_linkage_dict(D_matrix_dict, cluster_method, save=True, test=False, filep
     :return dictionary with the same keys, values are linkage arrays
     """
     
-    linkage_dict = dict()
-    
-    for key in D_matrix_dict:
-        linkage_dict[key] = linkage(D_matrix_dict[key], method=cluster_method, metric=None)
+    keys = list(D_matrix_dict.keys())
+    inputs = list(D_matrix_dict.values())
+    outputs = Parallel(n_jobs=num_cores)(delayed(linkage)(i, method=cluster_method, metric=None) for i in inputs)
+        
+    linkage_dict = dict(zip(keys, outputs))
         
     if save:
         if filepath is None:
@@ -147,5 +154,26 @@ def get_linkage_dict(D_matrix_dict, cluster_method, save=True, test=False, filep
             pkl.dump(linkage_dict, file)
             
     return linkage_dict
+
+def get_Dmatrix_and_linkages(GDM, cluster_methods, save=True, test=False, filepath=None, num_cores=num_cores):
+    """
+    Gets a distance matrix and a linkage matrix given a single GDM and a cluster method
+    
+    :param GDM: numpy array, graphlet degree matrix
+    :param cluster_method: string detailing type of agglomerative clustering; one of single, complete, average, or weighted
+    
+    :return tuple of condensed distance matrix, array
+    """
+    
+    if GDM is None:
+        D_matrix = None
+        linkage_arr_list = [None for i in cluster_methods]
+    
+    else:
+        D_matrix = get_D_matrix(GDM)
+        linkage_arr_list = Parallel(n_jobs=num_cores)(delayed(linkage)(D_matrix, method=cluster_method, metric=None)
+                                                                      for cluster_method in cluster_methods)
+    return (D_matrix, linkage_arr_list)
+        
 
 #--------------------------------------------------------------------------------------------
