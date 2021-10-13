@@ -1,6 +1,10 @@
 data/test-run/*
 !data/test-run/.gitkeep
 
+scripts/cache/*
+src/cache/*
+notebooks/cache/*
+
 *.DS_Store
 
 # Byte-compiled / optimized / DLL files
