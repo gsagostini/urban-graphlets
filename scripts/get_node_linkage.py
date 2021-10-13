@@ -7,8 +7,12 @@
 import sys
 sys.path.append('../')
 
-from src.utils import load_file
+from src.utils import load_file, save_file
 from src import node_clustering
+
+from joblib import Parallel, delayed
+import multiprocessing
+num_cores = multiprocessing.cpu_count()
 
 #--------------------------------------------------------------------------------------------
 
@@ -17,16 +21,31 @@ _clustering_methods = ['single', 'complete', 'average', 'weighted']
 
 #--------------------------------------------------------------------------------------------
 
-def main(GDMs_dict_path, clustering_methods):
+def main(GDMs_dict_path, cluster_methods, num_cores=num_cores):
     #Load the GDMs dicitonary:
     GDMs_dict = load_file(GDMs_dict_path)
-    #Get the distance matrix dictionary:
-    Dmatrix_dict = node_clustering.get_D_matrix_dict(GDMS_dict)
-    #Get the linkage matrix dictionary for each of the methods:
-    for method in clustering_methods:
-        linkage_dict = node_clustering.get_linkage_dict(Dmatrix_dict, method, save=True)
+    keys = list(GDMs_dict.keys())
+    GDMs = list(GDMs_dict.values())
     
-    return Dmatrix_dict, linkage_dict
+    #Get the distance matrices and linkage matrices:
+    outputs = Parallel(n_jobs=num_cores)(delayed(node_clustering.get_Dmatrix_and_linkages)(GDM, cluster_methods=cluster_methods)
+                                                                                           for GDM in GDMs)
+    #Save the distance matrix dictionary:
+    D_matrix_list = [output_tuple[0] for output_tuple in outputs]
+    D_matrix_dict = dict(zip(keys, D_matrix_list))
+    f_path = '../data/d3_results/Dmatrix_dict.pickle'
+    f = save_file(D_matrix_dict, f_path)
+    
+    #Save the linkage dictionaries (one per method):
+    i = 0
+    for method in cluster_methods:
+        linkage_list = [output_tuple[1][i] for output_tuple in outputs]
+        linkage_dict = dict(zip(keys, linkage_list))
+        f_path = '../data/d3_results/' + method + '_linkage_dict.pickle'
+        f = save_file(linkage_dict, f_path)
+        i+=1
+    
+    return "Distance and linkage matrices saved"
 
 if __name__ == '__main__':
-    Dmatrix_dict, linkage_dict = main(_GDMs_dict_path, _clustering_methods)
+    done = main(_GDMs_dict_path, _clustering_methods)
